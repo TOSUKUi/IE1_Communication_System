@@ -1,3 +1,10 @@
+/*=============================
+情報実験1
+課題1-Server.ver1
+BP13007
+雨宮俊貴
+©2015 雨宮俊貴
+===============================*/
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -69,7 +76,7 @@ int main(int argc, char *argv[])
       write(fd2,buf,strlen(buf) + 1);
       fsync(fd2);
     }
-
+    
 
     
     close(fd2);

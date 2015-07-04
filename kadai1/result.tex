@@ -1,0 +1,29 @@
+\documentclass[a4paper,12pt]{jarticle}
+\usepackage[top=30truemm,bottom=30truemm,left=25truemm,right=25truemm]{geometry}
+\title{情報実験1実行結果}
+\usepackage{ascmac}	% required for `\itembox' (yatex added)
+\begin{document}
+\maketitle
+\begin{center}
+ \begin{small}
+\begin{tabular}[tb]{|l|l|}\hline
+ クライアント側実行結果 &サーバー側実行結果 \\ \hline 
+ \verb+$ kadai1/kadai1_Client.out 127.0.0.1 12345+ & \verb+$ ./kadai1_Server.out+ \\
+ \verb+Connection established socket 3 used.+ & \verb+Connection establish socket 4 used.+ \\
+ \verb+Hello woeld+ & \verb+read Hello woeld+ \\
+ \verb+HELLO WOELD+ & \verb+write HELLO WOELD+\\
+ \verb+im tosukui+ & \verb+read im tosukui+\\
+ \verb+IM TOSUKUI+ & \verb+write IM TOSUKUI+\\
+ \verb+When I say ``cajun'' you say ``b'' +& \verb+read When I say ``cajun'' you say ``b''+\\
+ \verb+WHEN I SAY ``CAJUN'' YOU SAY ``B'' +& \verb+write WHEN I SAY ``CAJUN'' YOU SAY ``B''+\\ \hline
+\end{tabular}
+\end{small}
+\end{center}
+\begin{itembox}{エラー出力}
+\begin{verbatim}
+ $ kadai1/kadai1_Client.out
+ You didnt input any information of oponent.
+ usage kadai1_Client.out IP_Address port_number
+\end{verbatim} 
+\end{itembox}
+\end{document}
