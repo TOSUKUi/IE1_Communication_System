@@ -14,7 +14,7 @@ BP13007
 #include<arpa/inet.h>
 
 #define SOCK_NAME "./socket"
-#define NO_MATCH_MSG "NO match"
+#define NO_MATCH_MSG "未登録"
 
 FILE *func_InputFile(char *);
 
