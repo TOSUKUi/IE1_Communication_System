@@ -112,11 +112,11 @@ int main(int argc, char *argv[])
 
 
     printf("Congratulation! You answered right 5 quiz!\n");
-    strcpy(buf,"GET MASSAGE");
+    strcpy(buf,"GET MESSAGE");
     //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
     func_write_and_read(soc,buf,strlen(buf));
     printf("this is secret message\n");
-    printf("%s",buf);
+    printf("%s\n",buf);
 
   
 
