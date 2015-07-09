@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
   //ソケットのファイル名を指定
   saddr.sin_family=AF_INET;
   saddr.sin_addr.s_addr=INADDR_ANY;
-  saddr.sin_port=htons(12345);
+  saddr.sin_port=htons(13007);
   
 
   //strcpy(saddr.sum_path,SOCK_NAME);
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
     while ((ret = read(fd2 , buf, 1024)) > 0) {
       fprintf(stderr,"read: %s\n",buf);
       for (i = 0; i < ret; i++) {
-	if(isalpha(buf[i]))
+	if(isalpha(buf[i]))//大文字小文字変換
 	   buf[i] = toupper(buf[i]);
       }
 
