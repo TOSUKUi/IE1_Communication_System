@@ -1,0 +1,136 @@
+/*=============================
+情報実験1
+Quiz_Client ver 1
+BP13007
+雨宮俊貴
+©2015 雨宮俊貴
+===============================*/
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
+
+#define SOCK_NAME "./socket"
+
+int main(int argc, char *argv[])
+{
+
+  struct sockaddr_in saddr;
+  int i = 0;
+  int j = 0;
+  int soc;
+  char buf[1024];
+  char temp[256];
+  if(argc < 2){
+    printf("You didnt input any information of oponent.\nusage: kadai1_Client.out IP_Address port_number\n");
+    exit(1);
+  }
+
+  if ( ( soc = socket( AF_INET, SOCK_STREAM, 0 ) ) < 0 ) {
+    perror( "socket" );
+    exit( 1 );
+  }
+  /*
+  struct hostent *hp;
+  if((hp=gethostbyname("localhost"))==NULL){
+    perror("connect");
+    exit(1);
+  }
+
+  memcpy(&saddr.sin_addr, hp->h_addr, hp->h_length);
+  */
+  
+  memset( (char *)&saddr, 0, sizeof( saddr ) );
+  saddr.sin_family=AF_INET;
+  saddr.sin_addr.s_addr = inet_addr(argv[1]);
+  saddr.sin_port = htons(atoi(argv[2]));
+  //strcpy( saddr.sun_path, SOCK_NAME );
+
+  if ( connect( soc, ( struct sockaddr * )&saddr, ( socklen_t )sizeof( saddr ) ) < 0 ) {
+    perror( "connect" );
+    exit( 1 );
+  }
+  fprintf( stderr, "Connection established: socket %d used.\n", soc );
+  printf("This is Quiz Client.Input your ID.");
+  /*ユーザー名受付状態*/
+  while(1) {
+    printf("Input your User ID\n");
+    printf("::>");
+    scanf("%s",temp);
+    sprintf(buf,"USER %s",temp);
+    //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
+    func_write_and_read(soc,buf,strlen(buf));
+    if(!strcmp(buf,"OK")){
+      printf("Accepted your user id\n");
+      break;
+    }else if(!strcmp(buf,"NG"))
+      printf("Invalid ID\n");    
+  }
+  /*パスワード受付状態*/
+  while(1) {
+    printf("Input your Password\n");
+    printf("::>");
+    scanf("%s",temp);
+    sprintf(buf,"PASS %s",temp);
+    //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
+    func_write_and_read(soc,buf,strlen(buf));
+    if(!strcmp(buf,"OK")){
+      printf("Accepted your Password\n");
+      break;
+    }else if(!strcmp(buf,"NG"))
+      printf("Invalid password\n");    
+  }
+
+  /*クイズ,回答受付状態*/
+  while(i < 5) {
+    
+      sprintf(buf,"QUIZ %d",i);
+      func_write_and_read(soc,buf,strlen(buf));
+      if(!strcmp(buf,"NG"))
+	printf("Wrong number of right answers\n");
+      else{
+	printf("%s\n",buf);
+	printf("Input answer\n");    
+	printf("::>");
+	scanf("%s",temp);
+	sprintf(buf,"ANSR %s",temp);
+	//if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
+	func_write_and_read(soc,buf,strlen(buf));
+	if(!strcmp(buf,"OK")){
+	  printf("Exactly!\n");
+	  i++;
+      }else if(!strcmp(buf,"NG"))
+	printf("Wrong answer\n");    
+	
+    }
+  }
+
+
+    printf("Congratulation! You answered right 5 quiz!\n");
+    strcpy(buf,"GET MASSAGE");
+    //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
+    func_write_and_read(soc,buf,strlen(buf));
+    printf("this is secret message\n");
+    printf("%s",buf);
+
+  
+
+
+    
+
+  close( soc );
+
+  return 0;
+}
+
+
+void func_write_and_read(int soc,char *buf,int len){
+  write( soc, buf, strlen(buf)+1 );
+  fsync( soc );
+  read( soc, buf, 1024);
+}
