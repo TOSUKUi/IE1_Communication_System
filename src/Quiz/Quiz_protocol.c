@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     exit( 1 );
   }
   fprintf( stderr, "Connection established: socket %d used.\n", soc );
-  printf("This is Quiz Client.Input your ID.");
+  printf("This is Quiz Client.");
   /*ユーザー名受付状態*/
   while(1) {
     printf("Input your User ID\n");
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
   /*クイズ,回答受付状態*/
   while(i < 5) {
     
-      sprintf(buf,"QUIZ %d",i);
+      sprintf(buf,"QUIZ 5");
       func_write_and_read(soc,buf,strlen(buf));
       if(!strcmp(buf,"NG"))
 	printf("Wrong number of right answers\n");
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 
 
     printf("Congratulation! You answered right 5 quiz!\n");
-    strcpy(buf,"GET MASSAGE");
+    strcpy(buf,"GET MESSAGE");
     //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
     func_write_and_read(soc,buf,strlen(buf));
     printf("this is secret message\n");
