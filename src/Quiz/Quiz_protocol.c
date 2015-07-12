@@ -116,7 +116,7 @@ int main(int argc, char *argv[])
     //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
     func_write_and_read(soc,buf,strlen(buf));
     printf("this is secret message\n");
-    printf("%s",buf);
+    printf("%s\n",buf);
 
   
 
