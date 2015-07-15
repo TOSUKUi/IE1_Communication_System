@@ -32,8 +32,9 @@ int main(int argc, char *argv[])
   char buf[1024];
   char temp[256];
   int passwordMissFlag = 1;
+  int exitflag = 0;
   if(argc < 2){
-    printf("You didnt input any information of oponent.\nusage: kadai1_Client.out IP_Address port_number\n");
+    printf("You didnt input any information of oponent.\nusage: ./~this~.out IP_Address port_number\n");
     exit(1);
   }
 
@@ -66,7 +67,7 @@ int main(int argc, char *argv[])
   /*ユーザー名受付状態*/
   while(passwordMissFlag){
     func_inputUserId(soc);
-    passwordMissFlag = func_inputPassWord(soc);/*パスワード受付状態*/
+    passwordMissFlag = func_inputPassWord(soc);/*パスワード受付状態*/	
   }
   /*クイズ,回答受付状態*/
   func_wait_answer(soc);
@@ -104,6 +105,13 @@ void func_inputUserId(int soc){
     printf("Input your User ID\n");
     printf("::>");
     scanf("%s",temp);
+    if(!strcmp(temp,"QUIT")){
+      strcpy(buf,"QUIT");
+      func_write_and_read(soc,buf,strlen(buf));
+      fprintf(stderr,"%sを受信したため切断します\n",buf);
+      close(soc);
+      exit(1);
+    }
     sprintf(buf,"USER %s",temp);
     //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
     func_write_and_read(soc,buf,strlen(buf));
@@ -112,6 +120,8 @@ void func_inputUserId(int soc){
       break;
     }else if(!strcmp(buf,"NG"))
       printf("Invalid ID\n");    
+    else if(!strcmp(buf,"ERROR"))
+      printf("Invalid Input\n");
   }
 }
 
@@ -119,16 +129,26 @@ int func_inputPassWord(int soc){
   char temp[256];
   char buf[1024];
   while(1) {
-    printf("Input your Password\n");
+    
+    printf("%s\n",buf);
+    printf("Input password\n");    
     printf("::>");
     scanf("%s",temp);
+    
+    if(!strcmp(temp,"QUIT")){
+      strcpy(buf,temp);
+      func_write_and_read(soc,buf,strlen(buf));
+      fprintf(stderr,"%sを受信したため切断します\n",buf);
+      close(soc);
+      exit(1);
+    }
     sprintf(buf,"PASS %s",temp);
     //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
     func_write_and_read(soc,buf,strlen(buf));
     if(!strcmp(buf,"OK")){
       printf("Accepted your Password\n");
       return 0;
-      break;
+     
     }else if(!strcmp(buf,"NG")){
       printf("Invalid password\n");    
       return 1;
@@ -149,10 +169,19 @@ void func_wait_answer(int soc){
       else if(!strcmp(buf,"ERROR"))
 	printf("Wrong input");
       else{
+
 	printf("%s\n",buf);
 	printf("Input answer\n");    
 	printf("::>");
 	scanf("%s",temp);
+
+	if(!strcmp(temp,"QUIT")){
+	  strcpy(buf,temp);
+	  func_write_and_read(soc,buf,strlen(buf));
+	  fprintf(stderr,"%sを受信したため切断します\n",buf);
+	  close(soc);
+	  exit(1);
+	}
 	sprintf(buf,"ANSR %s",temp);
 	//if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
 	func_write_and_read(soc,buf,strlen(buf));
@@ -164,4 +193,13 @@ void func_wait_answer(int soc){
 	
     }
   }
+}
+
+
+void func_STAT(int soc){  
+  char buf[1024];
+  strcpy(buf,"STAT");
+  func_write_and_read(soc,buf,strlen(buf));
+  printf("%s\n",buf);
+  
 }
