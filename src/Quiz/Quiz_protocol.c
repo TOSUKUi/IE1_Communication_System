@@ -16,6 +16,9 @@ BP13007
 
 
 #define SOCK_NAME "./socket"
+void func_inputUserId(int);
+int func_inputPassWord(int);
+
 
 int main(int argc, char *argv[])
 {
@@ -26,6 +29,7 @@ int main(int argc, char *argv[])
   int soc;
   char buf[1024];
   char temp[256];
+  int passwordMissFlag = 1;
   if(argc < 2){
     printf("You didnt input any information of oponent.\nusage: kadai1_Client.out IP_Address port_number\n");
     exit(1);
@@ -58,41 +62,19 @@ int main(int argc, char *argv[])
   fprintf( stderr, "Connection established: socket %d used.\n", soc );
   printf("This is Quiz Client.");
   /*ユーザー名受付状態*/
-  while(1) {
-    printf("Input your User ID\n");
-    printf("::>");
-    scanf("%s",temp);
-    sprintf(buf,"USER %s",temp);
-    //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
-    func_write_and_read(soc,buf,strlen(buf));
-    if(!strcmp(buf,"OK")){
-      printf("Accepted your user id\n");
-      break;
-    }else if(!strcmp(buf,"NG"))
-      printf("Invalid ID\n");    
+  while(passwordMissFlag){
+    func_inputUserId(soc);
+    passwordMissFlag = func_inputPassWord(soc);/*パスワード受付状態*/
   }
-  /*パスワード受付状態*/
-  while(1) {
-    printf("Input your Password\n");
-    printf("::>");
-    scanf("%s",temp);
-    sprintf(buf,"PASS %s",temp);
-    //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
-    func_write_and_read(soc,buf,strlen(buf));
-    if(!strcmp(buf,"OK")){
-      printf("Accepted your Password\n");
-      break;
-    }else if(!strcmp(buf,"NG"))
-      printf("Invalid password\n");    
-  }
-
   /*クイズ,回答受付状態*/
   while(i < 5) {
     
-      sprintf(buf,"QUIZ 5");
+    sprintf(buf,"QUIZ %d",i);
       func_write_and_read(soc,buf,strlen(buf));
       if(!strcmp(buf,"NG"))
 	printf("Wrong number of right answers\n");
+      else if(!strcmp(buf,"ERROR"))
+	printf("Wrong input");
       else{
 	printf("%s\n",buf);
 	printf("Input answer\n");    
@@ -104,7 +86,7 @@ int main(int argc, char *argv[])
 	if(!strcmp(buf,"OK")){
 	  printf("Exactly!\n");
 	  i++;
-      }else if(!strcmp(buf,"NG"))
+	}else if(!strcmp(buf,"NG"))
 	printf("Wrong answer\n");    
 	
     }
@@ -133,4 +115,45 @@ void func_write_and_read(int soc,char *buf,int len){
   write( soc, buf, strlen(buf)+1 );
   fsync( soc );
   read( soc, buf, 1024);
+}
+
+
+void func_inputUserId(int soc){
+  char temp[256];
+  char buf[1024];
+  
+  while(1) {
+    printf("Input your User ID\n");
+    printf("::>");
+    scanf("%s",temp);
+    sprintf(buf,"USER %s",temp);
+    //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
+    func_write_and_read(soc,buf,strlen(buf));
+    if(!strcmp(buf,"OK")){
+      printf("Accepted your user id\n");
+      break;
+    }else if(!strcmp(buf,"NG"))
+      printf("Invalid ID\n");    
+  }
+}
+
+int func_inputPassWord(int soc){
+  char temp[256];
+  char buf[1024];
+  while(1) {
+    printf("Input your Password\n");
+    printf("::>");
+    scanf("%s",temp);
+    sprintf(buf,"PASS %s",temp);
+    //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
+    func_write_and_read(soc,buf,strlen(buf));
+    if(!strcmp(buf,"OK")){
+      printf("Accepted your Password\n");
+      return 0;
+      break;
+    }else if(!strcmp(buf,"NG")){
+      printf("Invalid password\n");    
+      return 1;
+    }
+  }
 }
