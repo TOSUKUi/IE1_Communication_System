@@ -1,0 +1,46 @@
+
+$ ./Quiz_protocol.out 172.29.144.26 34401
+Connection established: socket 3 used.
+This is Quiz Client.Input your User ID
+::>bp13007
+Accepted your user id
+OK
+Input password
+::>70031pb
+Accepted your Password
+歴史：東海道新幹線が開通したのは何年？
+Input answer
+::>a
+Wrong answer
+経済：企業における最高経営責任者とは次のうちどれ？ (1)ECO (2)CEO (3)CFO (4)CDK
+Input answer
+::>b
+Wrong answer
+東京のAMラジオ局、文化放送の周波数は○○○○kHzである。
+Input answer
+::>c
+Wrong answer
+パズドラ：半蔵のスキル上げに使われるモンスターは？(1)はまひめ　(2)ねねこ　(3)こだま　(4)わるりん
+Input answer
+::>3
+Wrong answer
+BMWのエンジンといえば「シルキー○」？（数字）
+Input answer
+::>2
+Wrong answer
+歴史：太平洋戦争が始まったのは何年？
+Input answer
+::>1945
+Wrong answer
+数学：12×9+3
+Input answer
+::>111
+Exactly!
+数学：132＋456÷128
+Input answer
+::>d
+Wrong answer
+顔がうるさい声優といえば？ (1)柿原徹也　(2)宮野真守　(3)神谷浩史　(4)小野大輔
+Input answer
+::>QUIT
+GOOD BYEを受信したため切断します
