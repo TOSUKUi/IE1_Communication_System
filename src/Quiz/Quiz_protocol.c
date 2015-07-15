@@ -16,16 +16,18 @@ BP13007
 
 
 #define SOCK_NAME "./socket"
+
+void func_write_and_read(int soc,char *buf,int len);
 void func_inputUserId(int);
 int func_inputPassWord(int);
-
+void func_wait_answer(int);
 
 int main(int argc, char *argv[])
 {
 
   struct sockaddr_in saddr;
-  int i = 0;
-  int j = 0;
+
+  
   int soc;
   char buf[1024];
   char temp[256];
@@ -67,39 +69,15 @@ int main(int argc, char *argv[])
     passwordMissFlag = func_inputPassWord(soc);/*パスワード受付状態*/
   }
   /*クイズ,回答受付状態*/
-  while(i < 5) {
-    
-    sprintf(buf,"QUIZ %d",i);
-      func_write_and_read(soc,buf,strlen(buf));
-      if(!strcmp(buf,"NG"))
-	printf("Wrong number of right answers\n");
-      else if(!strcmp(buf,"ERROR"))
-	printf("Wrong input");
-      else{
-	printf("%s\n",buf);
-	printf("Input answer\n");    
-	printf("::>");
-	scanf("%s",temp);
-	sprintf(buf,"ANSR %s",temp);
-	//if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
-	func_write_and_read(soc,buf,strlen(buf));
-	if(!strcmp(buf,"OK")){
-	  printf("Exactly!\n");
-	  i++;
-	}else if(!strcmp(buf,"NG"))
-	printf("Wrong answer\n");    
-	
-    }
-  }
+  func_wait_answer(soc);
 
-
-    printf("Congratulation! You answered right 5 quiz!\n");
-    strcpy(buf,"GET MESSAGE");
-    //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
-    func_write_and_read(soc,buf,strlen(buf));
-    printf("this is secret message\n");
-    printf("%s\n",buf);
-
+  printf("Congratulation! You answered right 5 quiz!\n");
+  strcpy(buf,"GET MESSAGE");
+  //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
+  func_write_and_read(soc,buf,strlen(buf));
+  printf("this is secret message\n");
+  printf("%s\n",buf);
+  
   
 
 
@@ -154,6 +132,36 @@ int func_inputPassWord(int soc){
     }else if(!strcmp(buf,"NG")){
       printf("Invalid password\n");    
       return 1;
+    }
+  }
+}
+
+void func_wait_answer(int soc){
+  char temp[256];
+  char buf[1024];
+  int i=0;
+  while(i < 5) {
+    
+    sprintf(buf,"QUIZ %d",i);
+      func_write_and_read(soc,buf,strlen(buf));
+      if(!strcmp(buf,"NG"))
+	printf("Wrong number of right answers\n");
+      else if(!strcmp(buf,"ERROR"))
+	printf("Wrong input");
+      else{
+	printf("%s\n",buf);
+	printf("Input answer\n");    
+	printf("::>");
+	scanf("%s",temp);
+	sprintf(buf,"ANSR %s",temp);
+	//if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
+	func_write_and_read(soc,buf,strlen(buf));
+	if(!strcmp(buf,"OK")){
+	  printf("Exactly!\n");
+	  i++;
+	}else if(!strcmp(buf,"NG"))
+	printf("Wrong answer\n");    
+	
     }
   }
 }
