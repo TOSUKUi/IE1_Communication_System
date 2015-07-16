@@ -1,6 +1,6 @@
 /*=============================
 情報実験1
-Quiz_Client ver 3
+Quiz_Client ver Extream
 BP13007
 雨宮俊貴
 ©2015 雨宮俊貴
@@ -21,16 +21,24 @@ void func_write_and_read(int soc,char *buf,int len);
 void func_inputUserId(int);
 int func_inputPassWord(int);
 void func_wait_answer(int);
+void add(int *stack,int *top);
+void sub(int *stack,int *top);
+void mul(int *stack,int *top);
+void diverse(int *stack,int *top);
+
+
 
 int main(int argc, char *argv[])
 {
 
   struct sockaddr_in saddr;
-
   
+  int i,j;
+  int count = 0;
   int soc;
   char buf[1024];
   char temp[256];
+  
   int passwordMissFlag = 1;
   int exitflag = 0;
   if(argc < 2){
@@ -38,10 +46,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  if ( ( soc = socket( AF_INET, SOCK_STREAM, 0 ) ) < 0 ) {
-    perror( "socket" );
-    exit( 1 );
-  }
+  
   /*
   struct hostent *hp;
   if((hp=gethostbyname("localhost"))==NULL){
@@ -57,21 +62,43 @@ int main(int argc, char *argv[])
   saddr.sin_addr.s_addr = inet_addr(argv[1]);
   saddr.sin_port = htons(atoi(argv[2]));
   //strcpy( saddr.sun_path, SOCK_NAME );
+  for (i = 0; i < 900; i++) 
+    {
+      if ( ( soc = socket( AF_INET, SOCK_STREAM, 0 ) ) < 0 ) {
+	perror( "socket" );
+	exit( 1 );
+      }
+      if ( connect( soc, ( struct sockaddr * )&saddr, ( socklen_t )sizeof( saddr ) ) < 0 ) {
+	perror( "connect" );
+	exit( 1 );
+      }
+      fprintf( stderr, "%dth Connection established: socket %d used.\n", i,soc );
+      printf("This is Quiz Client.\n");  
+      strcpy(buf,"USER bp13007");
+      func_write_and_read(soc,buf,strlen(buf));
+      strcpy(buf,"PASS 70031pb");
+      func_write_and_read(soc,buf,strlen(buf));
+    
+       for (j = 0; j < 5; j++) {
+	sprintf(buf,"QUIZ %d",count);
+	func_write_and_read(soc,buf,strlen(buf));
+	fprintf(stderr,"%s\n",buf);
+	printf("a\n");
+	sprintf(temp,"ANSR %d",func_stackmachine(buf));
+	strcpy(buf,temp);
+	func_write_and_read(soc,buf,strlen(buf));
+	if(!strcmp(buf,"OK"))
+	  count++;
+       }
+      count = 0;
+      
+      strcpy(buf,"QUIT");
+      func_write_and_read(soc,buf,strlen(buf));
+      close(soc);
+    }
 
-  if ( connect( soc, ( struct sockaddr * )&saddr, ( socklen_t )sizeof( saddr ) ) < 0 ) {
-    perror( "connect" );
-    exit( 1 );
-  }
-  fprintf( stderr, "Connection established: socket %d used.\n", soc );
-  printf("This is Quiz Client.");
-  /*ユーザー名受付状態*/
-  while(passwordMissFlag){
-    func_inputUserId(soc);
-    passwordMissFlag = func_inputPassWord(soc);/*パスワード受付状態*/	
-  }
-  /*クイズ,回答受付状態*/
-  func_wait_answer(soc);
-
+  
+  
   printf("Congratulation! You answered right 5 quiz!\n");
   strcpy(buf,"GET MESSAGE");
   //if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
@@ -80,11 +107,11 @@ int main(int argc, char *argv[])
   printf("%s\n",buf);
   
   
-
+  close(soc);
 
     
 
-  close( soc );
+
 
   return 0;
 }
@@ -182,7 +209,8 @@ void func_wait_answer(int soc){
 	  close(soc);
 	  exit(1);
 	}
-	sprintf(buf,"ANSR %s",temp);
+	
+	sprintf(buf,"ANSR %d",func_stackmachine(buf));
 	//if ( buf[strlen(buf)-1] == '\n' ) buf[strlen(buf)-1] = '\0';
 	func_write_and_read(soc,buf,strlen(buf));
 	if(!strcmp(buf,"OK")){
@@ -192,6 +220,8 @@ void func_wait_answer(int soc){
 	printf("Wrong answer\n");    
 	
     }
+
+
   }
 }
 
@@ -202,4 +232,89 @@ void func_STAT(int soc){
   func_write_and_read(soc,buf,strlen(buf));
   printf("%s\n",buf);
   
+}
+
+
+
+
+void push(int *stack,int *top,int val){
+  stack[*top] = val;
+  *top = *(top) + 1;
+}
+
+int pop(int *stack,int *top){
+  int temp;
+  if(*top == 0){
+    printf("no value in stack");
+    return NULL;    
+  }else{
+  temp = stack[*top];
+  *(top)--;
+  return temp;
+  }
+}
+
+void add(int *stack,int *top){
+  int a;
+  int b;
+  a = pop(stack,top);
+  b = pop(stack,top);
+  push(stack,top,b + a);
+  
+}
+
+void sub(int *stack,int *top){
+  int a;
+  int b;
+  a = pop(stack,top);
+  b = pop(stack,top);
+  push(stack,top,b - a);
+  
+}
+
+void mul(int *stack,int *top){
+  int a;
+  int b;
+  a = pop(stack,top);
+  b = pop(stack,top);
+  push(stack,top,b * a);
+  
+}
+
+void diverse(int *stack,int *top){
+  int a;
+  int b;
+  a = pop(stack,top);
+  b = pop(stack,top);
+  push(stack,top,b/a);
+  
+}
+
+int func_stackmachine(char *expression){
+  int stack[512];
+  int top = 0;
+  char temp[256];
+  printf("stackmachine");
+  push(stack,&top,atoi(strtok(expression," ")));
+  while(1){
+    printf("shit");
+    strcpy(temp,strtok(NULL," "));
+    if(temp == NULL)
+      break;
+    else{
+      if(!strcmp(temp,"+"))
+	add(stack,&top);
+      else if(!strcmp(temp,"-"))
+	sub(stack,&top);
+      else if(!strcmp(temp,"*"))
+	mul(stack,&top);
+      else if(!strcmp(temp,"/"))
+	diverse(stack,&top);	  
+      else{
+	push(stack,&top,atoi(temp));
+	printf("%d",top);
+      }
+    }
+  }
+  return pop(stack,&top);      
 }

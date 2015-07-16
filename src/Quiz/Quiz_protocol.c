@@ -65,10 +65,11 @@ int main(int argc, char *argv[])
   fprintf( stderr, "Connection established: socket %d used.\n", soc );
   printf("This is Quiz Client.");
   /*ユーザー名受付状態*/
-  while(passwordMissFlag){
-    func_inputUserId(soc);
-    passwordMissFlag = func_inputPassWord(soc);/*パスワード受付状態*/	
-  }
+  printf("This is Quiz Client.\n");  
+      strcpy(buf,"USER bp13007");
+      func_write_and_read(soc,buf,strlen(buf));
+      strcpy(buf,"PASS 70031pb");
+      func_write_and_read(soc,buf,strlen(buf));
   /*クイズ,回答受付状態*/
   func_wait_answer(soc);
 
